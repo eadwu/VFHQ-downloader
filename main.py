@@ -36,6 +36,7 @@ def process_single_file(meta_file, meta_dir, video_dir, output_dir, progress_bar
             successful_downloads += 1
         else:
             failed_downloads += 1
+            logging.error(f"failed to download {meta_file}")
     except Exception as e:
         failed_downloads += 1
         logging.error(f"Failed to process {meta_file}: {e}")
@@ -54,10 +55,12 @@ def main():
     total_videos = len(meta_files)
 
     with tqdm(total=total_videos, unit='file') as progress_bar:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(process_single_file, meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
-                       for meta_file in meta_files]
-            concurrent.futures.wait(futures)
+        # with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        #     futures = [executor.submit(process_single_file, meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
+        #                for meta_file in meta_files]
+        #     concurrent.futures.wait(futures)
+        for meta_file in meta_files:
+            process_single_file(meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
 
     elapsed_time = time.time() - start_time
     print(f"\nTotal time used: {elapsed_time:.2f} seconds")
