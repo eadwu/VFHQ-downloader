@@ -49,18 +49,20 @@ def main():
     start_time = time.time()
 
     max_workers = min(32, max(4, multiprocessing.cpu_count() - 1))
+    max_workers = 4
 
     meta_files = [f for f in os.listdir(
-        META_DIR) if f.endswith('.txt')][:VIDEO_NUM]
+        META_DIR) if f.endswith('.txt')]
+        # META_DIR) if f.endswith('.txt')][:VIDEO_NUM]
     total_videos = len(meta_files)
 
     with tqdm(total=total_videos, unit='file') as progress_bar:
-        # with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        #     futures = [executor.submit(process_single_file, meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
-        #                for meta_file in meta_files]
-        #     concurrent.futures.wait(futures)
-        for meta_file in meta_files:
-            process_single_file(meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(process_single_file, meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
+                       for meta_file in meta_files]
+            concurrent.futures.wait(futures)
+        # for meta_file in meta_files:
+        #     process_single_file(meta_file, META_DIR, VIDEO_DIR, OUTPUT_DIR, progress_bar)
 
     elapsed_time = time.time() - start_time
     print(f"\nTotal time used: {elapsed_time:.2f} seconds")

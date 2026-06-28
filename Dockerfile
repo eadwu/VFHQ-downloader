@@ -18,7 +18,7 @@ RUN apt update && \
 RUN rm -rf /workspace && mkdir /workspace
 WORKDIR /workspace
 
-RUN uv init --python 3.12 --seed && \
+RUN uv venv --python 3.12 --seed && \
     uv pip install \
         yt-dlp \
         'moviepy<2' \
